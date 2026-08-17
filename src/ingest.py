@@ -16,6 +16,9 @@ def download_prices(tickers=TICKERS, start=START, end=END) -> pd.DataFrame:
         raw = raw.reset_index() 
 
         # make column names in lower case, and replace space by _
+        # if raw is of type pandas multiindex, only get attributes like 'open'
+        if isinstance(raw.columns, pd.MultiIndex):
+            raw.columns = raw.columns.get_level_values(0)
         raw.columns = [c.lower().replace(" ", "_") for c in raw.columns]
 
         # add one new column to this frame called 'ticker' with value the current ticker in the for loop
@@ -28,19 +31,20 @@ def download_prices(tickers=TICKERS, start=START, end=END) -> pd.DataFrame:
     return df[["date", "ticker", "open", "high", "low", "close", "adj_close", "volume"]]
 
 
-def load_raw_to_db():
-    df = download_prices()
+def load_raw_to_db(df=None, tickers=TICKERS, start=START, end=END):
+    if df is None:
+        df = download_prices(tickers=tickers, start=start, end=end)
     with get_connection() as con:
         con.execute(
             """
-            INSERT OR REPLACE INTO raw_prices
+            INSERT OR REPLACE INTO raw
                 (date, ticker, open, high, low, close, adj_close, volume)
             SELECT
                 date, ticker, open, high, low, close, adj_close, volume
             FROM df
             """
         )
-    print(f"Write {len(df)} rows to raw_prices")
+    print(f"Write {len(df)} rows to raw")
     
 
 if __name__ == "__main__":
