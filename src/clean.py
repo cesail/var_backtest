@@ -1,10 +1,11 @@
+from src.db import get_connection
+
+
 def clean_and_load():
-"""
-Use SQL to clean raw data with window functions
-Load to daily_returns table
-"""
-
-
+    """
+    Use SQL to clean raw data with window functions
+    Load to daily_returns table
+    """
     with get_connection() as con:
         con.execute(
         """
@@ -13,10 +14,17 @@ Load to daily_returns table
             date,
             ticker,
             adj_close,
-            LN(adj_close / LAG(adj_close) OVER (PARTITION BY ticker ORDER BY date)) AS log_return,
-            adj_close / LAG(adj_close) OVER (PARTITION BY ticker ORDER BY date) - 1 AS pct_return
-        FROM raw_prices
-        WHERE adj_close IS NOT NULL
-        QUALIFY log_return IS NOT NULL
+            LN(adj_close / 
+                LAG(adj_close) OVER w) AS log_return, 
+            adj_close / 
+                LAG(adj_close) OVER w - 1 AS pct_return
+        FROM raw
+        WHERE adj_close > 0 
+        WINDOW w AS (PARTITION BY ticker ORDER BY date)
+        QUALIFY log_return IS NOT NULL;
         """
         )
+
+
+if __name__ == "__main__":
+    clean_and_load()
