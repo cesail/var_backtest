@@ -19,23 +19,24 @@ def read_returns(con):
     df = con.execute(
         "SELECT date, log_return FROM daily_returns ORDER BY date"
     ).df()
+    print("Read return data from db.")
     return df["date"], df["log_return"]
 
 
-def align(dates, var):
-    """
-    Abandon some oldest dates that do not have VaR forecasts due to window length
+# def align(dates, var):
+#     """
+#     Abandon some oldest dates that do not have VaR forecasts due to window length
 
-    Args:
-        dates (pd.Series): trading dates 
-        var (pd.Series): a series of daily VaR predictions
+#     Args:
+#         dates (pd.Series): trading dates 
+#         var (pd.Series): a series of daily VaR predictions
 
-    Returns:
-        tuple[pd.Series, pd.Series]
-    """
-    offset = len(dates) - len(var)
-    dates_with_forecast = dates.iloc[offset:].reset_index(drop=True)
-    return dates_with_forecast, var.reset_index(drop=True)
+#     Returns:
+#         tuple[pd.Series, pd.Series]
+#     """
+#     offset = len(dates) - len(var)
+#     dates_with_forecast = dates.iloc[offset:].reset_index(drop=True)
+#     return dates_with_forecast, var.reset_index(drop=True)
 
 
 def build(con):
@@ -50,24 +51,27 @@ def build(con):
     """
     dates, r = read_returns(con)
     runs = [
-        ("hs",    hs_var(r, CONF, HS_WINDOW),       HS_WINDOW),
-        ("ewma",  ewma_var(r, CONF, EWMA_LAM),      0),
-        ("garch", garch_var(r, CONF, GARCH_WINDOW), GARCH_WINDOW),
+        ("hs",    hs_var(r, HS_WINDOW, CONF),       HS_WINDOW),
+        ("ewma",  ewma_var(r, EWMA_LAM, CONF),      0),
+        ("garch", garch_var(r, GARCH_WINDOW, CONF), GARCH_WINDOW),
     ]
+
+    print(f"[DEBUG]Ran {len(runs)} models to predict VaR.")
 
     frames = []
     for model, var, window in runs:
-        d, v = align(dates, var)
         frames.append(pd.DataFrame({
-            "date": d,
+            "date": dates,
             "model": model,
-            "var": v,
+            "var": var,
             "window_size": window,
             "confidence_level": CONF,
         }))
 
     result_frame = pd.concat(frames, ignore_index=True) # indexed by integers
     result_frame["created_at"] = pd.Timestamp.now()
+
+    print(f"Created the pandas VaR result frame.")
 
     return result_frame
 
@@ -76,3 +80,4 @@ if __name__ == "__main__":
     with get_connection() as con:
         var_forecasts = build(con)
         load_forecasts_to_db(con, var_forecasts)
+

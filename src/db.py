@@ -36,8 +36,10 @@ def load_forecasts_to_db(con, forecasts_df):
     """
     con.execute("DELETE FROM var_forecasts")
     con.execute("INSERT INTO var_forecasts " \
-                "SELECT date, model, var, window_size, confidence_level, created_at" \
-                "FROM forecasts_df")
+                "(date, model, var, window_size, confidence_level, created_at) " \
+                "SELECT date, model, var, window_size, confidence_level, created_at " \
+                "FROM forecasts_df " \
+                "WHERE var IS NOT NULL")
 
 
 if __name__ == "__main__":
