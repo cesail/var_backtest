@@ -27,8 +27,8 @@ def garch_var_one_step(returns_window, confidence=0.99, dist='t'):
 
     forecast = res.forecast(horizon=1)
     sigma_next = np.sqrt(forecast.variance.values[-1, 0]) / 100
-    q = res.model.distribution.ppf(1 - confidence, [res.params['nu']])
-    return q * sigma_next
+    t = res.model.distribution.ppf(1 - confidence, [res.params['nu']])
+    return t * sigma_next
 
 
 def garch_var(returns, window=250, confidence=0.99, dist='t'):
