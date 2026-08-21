@@ -18,8 +18,7 @@ def get_connection(read_only: bool = False):
 
 def init_schema():
     """
-    Initialize schema
-    This function should not be called elsewhere
+    Initialize schema. Only invoked via `python db.py`.
     """
     with get_connection() as con:
         with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
@@ -38,4 +37,9 @@ def load_forecasts_to_db(con, forecasts_df):
     con.execute("DELETE FROM var_forecasts")
     con.execute("INSERT INTO var_forecasts " \
                 "SELECT date, model, var, window_size, confidence_level, created_at" \
-                " FROM forecasts_df")
+                "FROM forecasts_df")
+
+
+if __name__ == "__main__":
+    init_schema()
+    print("[DEBUG] Schema initialized")
