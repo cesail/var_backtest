@@ -28,3 +28,15 @@ CREATE TABLE IF NOT EXISTS var_forecasts (
     created_at        TIMESTAMP NOT NULL,
     PRIMARY KEY (date, model, window_size, confidence_level)
 );
+
+CREATE TABLE IF NOT EXISTS backtest_stats (
+    model            VARCHAR,
+    confidence_level DOUBLE,
+    n_obs            INTEGER,
+    exceptions       INTEGER,
+    exception_rate   DOUBLE,
+    kupiec_stat  DOUBLE, p_kupiec  DOUBLE,   -- Kupiec POF
+    chris_stat DOUBLE, p_chris DOUBLE,   -- Christoffersen independence
+    cc_stat  DOUBLE, p_cc  DOUBLE,   -- Conditional cover
+    created_at TIMESTAMP
+);

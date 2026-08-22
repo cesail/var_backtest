@@ -15,6 +15,12 @@ EWMA_LAM = 0.94
 def read_returns(con):
     """
     Read date and log returns from the daily_returns table in db
+
+    Args:
+        con (duckdb.DuckDBPyConnection): the connection produced by get_connection.
+
+    Returns:
+        tuple: (pd.Series, pd.Series)
     """
     df = con.execute(
         "SELECT date, log_return FROM daily_returns ORDER BY date"
