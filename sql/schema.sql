@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS var_forecasts (
 CREATE TABLE IF NOT EXISTS backtest_stats (
     model            VARCHAR,
     confidence_level DOUBLE,
-    n_obs            INTEGER,
+    n_obs            INTEGER,  -- T-window_size for hs and garch; T-1 for ewma
     exceptions       INTEGER,
     exception_rate   DOUBLE,
     kupiec_stat  DOUBLE, p_kupiec  DOUBLE,   -- Kupiec POF

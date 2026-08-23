@@ -7,8 +7,9 @@ from src.models.garch import garch_var
 
 
 CONF = 0.99
-HS_WINDOW = 250
-GARCH_WINDOW = 250
+# at any time, the var_forecasts table in db will not have 2 different window_size for a model
+HS_WINDOW = 250 
+GARCH_WINDOW = 250 
 EWMA_LAM = 0.94
 
 
