@@ -74,8 +74,8 @@ def run_backtest(con):
     Returns:
         pd.DataFrame: one row per model with columns model, confidence_level, n_obs, exceptions, n00, n01, n10, n11.
     """
-    breach_count_frame = con.execute(SQL_PATH.read_text()).df()
-    print(f"Read {len(breach_count_frame)} model rows.")
+    breach_count_frame = con.execute(SQL_PATH.read_text(encoding="utf-8")).df()
+    print(f"[DEBUG] successfully executed backtest.sql: Read {len(breach_count_frame)} model rows.")
     return breach_count_frame
 
 
@@ -108,7 +108,7 @@ def compute_stats(breach_count_frame):
         })
     df = pd.DataFrame(rows)
     df["created_at"] = pd.Timestamp.now()
-    print(f"Computed backtest statistics for {len(df)} models.")
+    print(f"[DEBUG] Computed backtest statistics for {len(df)} models.")
     return df
 
 

@@ -28,3 +28,4 @@ def clean_and_load():
 
 if __name__ == "__main__":
     clean_and_load()
+    print("[DEBUG] successfully loaded clean data to db")

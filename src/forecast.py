@@ -26,7 +26,7 @@ def read_returns(con):
     df = con.execute(
         "SELECT date, log_return FROM daily_returns ORDER BY date"
     ).df()
-    print("[DEBUG: forecast.read_returns]Read return data from db.")
+    print("[DEBUG: forecast.read_returns]successfully read return data from db.")
     return df["date"], df["log_return"]
 
 
@@ -64,7 +64,7 @@ def build(con):
     result_frame = pd.concat(frames, ignore_index=True)
     result_frame["created_at"] = pd.Timestamp.now()
 
-    print(f"Created the pandas VaR result frame.")
+    print(f"[DEBUG]successfully created the pandas VaR result frame.")
 
     return result_frame
 
@@ -73,4 +73,4 @@ if __name__ == "__main__":
     with get_connection() as con:
         var_forecasts = build(con)
         load_forecasts_to_db(con, var_forecasts)
-
+        print("[DEBUG] successfully loaded var forecasts to db")

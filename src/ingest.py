@@ -27,7 +27,7 @@ def download_prices(tickers=TICKERS, start=START, end=END) -> pd.DataFrame:
         frames.append(raw)
 
     df = pd.concat(frames, ignore_index=True) 
-
+    print("[DEBUG] successfully downloaded raw data")
     return df[["date", "ticker", "open", "high", "low", "close", "adj_close", "volume"]]
 
 
@@ -44,7 +44,7 @@ def load_raw_to_db(df=None, tickers=TICKERS, start=START, end=END):
             FROM df
             """
         )
-    print(f"Write {len(df)} rows to raw")
+    print(f"Write {len(df)} rows to raw table in db")
     
 
 if __name__ == "__main__":
