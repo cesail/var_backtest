@@ -32,14 +32,32 @@ def load_forecasts_to_db(con, forecasts_df):
 
     Args:
         con: a DuckDB connection
-        forecasts_df: a pandas dataframe with columns date, model, var, window_size, confidence_level, created_at
+        forecasts_df: a pandas dataframe with columns date, model, var, log_return, breach, window_size, confidence_level, created_at
     """
     con.execute("DELETE FROM var_forecasts")
     con.execute("INSERT INTO var_forecasts " \
-                "(date, model, var, window_size, confidence_level, created_at) " \
-                "SELECT date, model, var, window_size, confidence_level, created_at " \
+                "(date, model, var, log_return, breach, window_size, confidence_level, created_at) " \
+                "SELECT date, model, var, log_return, breach, window_size, confidence_level, created_at " \
                 "FROM forecasts_df " \
                 "WHERE var IS NOT NULL")
+
+
+def load_backtest_stats_to_db(con, stats_df):
+    """
+    Load a pandas DataFrame for backtest statistics to the backtest_stats table in db.
+    Erase any existing records from the backtest_stats table before writing to it.
+
+    Args:
+        con: a DuckDB connection
+        stats_df: a pandas dataframe with columns model, confidence_level, n_obs, exceptions, exception_rate, kupiec_stat, p_kupiec, chris_stat, p_chris, cc_stat, p_cc, created_at
+    """
+    con.execute("DELETE FROM backtest_stats")
+    con.execute("INSERT INTO backtest_stats " \
+                "(model, confidence_level, n_obs, exceptions, exception_rate, " \
+                "kupiec_stat, p_kupiec, chris_stat, p_chris, cc_stat, p_cc, created_at) " \
+                "SELECT model, confidence_level, n_obs, exceptions, exception_rate, " \
+                "kupiec_stat, p_kupiec, chris_stat, p_chris, cc_stat, p_cc, created_at " \
+                "FROM stats_df")
 
 
 if __name__ == "__main__":

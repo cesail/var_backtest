@@ -23,7 +23,9 @@ CREATE TABLE IF NOT EXISTS var_forecasts (
     date              DATE      NOT NULL,
     model             VARCHAR   NOT NULL,      -- 'hs' / 'garch' / 'ewma'
     var               DOUBLE    NOT NULL,      -- raw sign, usually negative
-    window_size       INTEGER   NOT NULL,      -- 0 for ewma 
+    log_return        DOUBLE    NOT NULL,      -- actual return on this date
+    breach            INTEGER   NOT NULL,      -- 1 if log_return < var
+    window_size       INTEGER   NOT NULL,      -- 0 for ewma
     confidence_level  DOUBLE    NOT NULL,      -- example: 0.99
     created_at        TIMESTAMP NOT NULL,
     PRIMARY KEY (date, model, window_size, confidence_level)

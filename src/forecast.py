@@ -30,31 +30,15 @@ def read_returns(con):
     return df["date"], df["log_return"]
 
 
-# def align(dates, var):
-#     """
-#     Abandon some oldest dates that do not have VaR forecasts due to window length
-
-#     Args:
-#         dates (pd.Series): trading dates 
-#         var (pd.Series): a series of daily VaR predictions
-
-#     Returns:
-#         tuple[pd.Series, pd.Series]
-#     """
-#     offset = len(dates) - len(var)
-#     dates_with_forecast = dates.iloc[offset:].reset_index(drop=True)
-#     return dates_with_forecast, var.reset_index(drop=True)
-
-
 def build(con):
     """
-    Read dates and log_returns from the daily_returns table. Run each model in the runs list to get series of daily VaR predictions. Integrate actual log_returns and VaR predictions into a data frame.
+    Read dates and log_returns from the daily_returns table. Run each model to get daily VaR predictions. Assemble actual log_returns, VaR predictions, and breach flags (1 if breach, 0 if not) into a data frame.
 
     Args:
         con (duckdb.DuckDBPyConnection): the connection produced by get_connection.
 
     Returns:
-        pd.DataFrame: a data frame with columns date, model (e.g., garch), var (the daily var predicted by the model using past returns), window_size (0 for ewma), confidence_level (e.g., 0.99), and a time stamp.
+        pd.DataFrame: columns date, model, var, log_return, breach, window_size, confidence_level, created_at.
     """
     dates, r = read_returns(con)
     runs = [
@@ -71,11 +55,13 @@ def build(con):
             "date": dates,
             "model": model,
             "var": var,
+            "log_return": r,
+            "breach": (r < var).astype("Int64"),   # 1 if log_return < var; NA where var is NaN
             "window_size": window,
             "confidence_level": CONF,
         }))
 
-    result_frame = pd.concat(frames, ignore_index=True) # indexed by integers
+    result_frame = pd.concat(frames, ignore_index=True)
     result_frame["created_at"] = pd.Timestamp.now()
 
     print(f"Created the pandas VaR result frame.")

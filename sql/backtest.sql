@@ -1,21 +1,8 @@
-CREATE OR REPLACE TABLE breaches AS
-SELECT
-    v.model,
-    v.confidence_level,
-    v.date,
-    r.log_return,
-    v.var,
-    CAST(r.log_return < v.var AS INTEGER) AS breach -- value = 1 if true
-FROM var_forecasts v
-JOIN daily_returns r USING (date)
-ORDER BY v.model, v.date;
-
-
 WITH intermediate_table AS (
     SELECT
         model, confidence_level, breach,
         LAG(breach) OVER (PARTITION BY model ORDER BY date) AS prev_breach
-    FROM breaches
+    FROM var_forecasts
 ) -- CTE
 SELECT
     model, confidence_level,
