@@ -26,7 +26,7 @@ def read_returns(con):
     df = con.execute(
         "SELECT date, log_return FROM daily_returns ORDER BY date"
     ).df()
-    print("Read return data from db.")
+    print("[DEBUG: forecast.read_returns]Read return data from db.")
     return df["date"], df["log_return"]
 
 
