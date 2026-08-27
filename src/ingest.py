@@ -32,6 +32,7 @@ def download_prices(tickers=TICKERS, start=START, end=END) -> pd.DataFrame:
 
 
 def load_raw_to_db(df=None, tickers=TICKERS, start=START, end=END):
+    # df arg is for testing
     if df is None:
         df = download_prices(tickers=tickers, start=start, end=end)
     with get_connection() as con:

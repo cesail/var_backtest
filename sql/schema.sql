@@ -42,3 +42,14 @@ CREATE TABLE IF NOT EXISTS backtest_stats (
     cc_stat  DOUBLE, p_cc  DOUBLE,   -- Conditional cover
     created_at TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS basel_zones (
+    zone       VARCHAR,   -- green / yellow / red
+    min_exc    INTEGER,   -- inclusive, per-250-day equivalent
+    max_exc    INTEGER    -- inclusive
+);
+DELETE FROM basel_zones;
+INSERT INTO basel_zones VALUES
+    ('green', 0, 4),
+    ('yellow', 5, 9),
+    ('red', 10, 999);
