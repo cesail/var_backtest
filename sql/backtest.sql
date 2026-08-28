@@ -6,8 +6,8 @@ WITH intermediate_table AS (
 ) -- CTE
 SELECT
     model, confidence_level,
-    COUNT(*)                                    AS n_obs,       -- Kupiec,含首日
-    SUM(breach)                                 AS exceptions,  -- Kupiec,含首日
+    COUNT(*)                                    AS n_obs,       -- Kupiec,including day 0
+    SUM(breach)                                 AS exceptions,  -- Kupiec,including day 0
     SUM((prev_breach=0)::INT * (breach=0)::INT) AS n00,  -- Boolean values as integers, 0/1 multiplication; null if prev_breach is null 
     SUM((prev_breach=0)::INT * (breach=1)::INT) AS n01,
     SUM((prev_breach=1)::INT * (breach=0)::INT) AS n10,
