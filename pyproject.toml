@@ -7,9 +7,11 @@ dependencies = [
 
     "arch==8.0.0",
 
+    "duckdb==1.5.5",
+
     "ipykernel==7.3.0",
 
-    "jupyter==1.1.1,"
+    "jupyter==1.1.1"，
 
     "matplotlib==3.11.1",
 
@@ -19,12 +21,10 @@ dependencies = [
 
     "scipy==1.18.0",
 
-    "statsmodels==0.14.6",
-
     "yfinance==1.6.0"
 ]
 
 
 
 [tool.setuptools]
-packages = ["var_backtest"]
+packages = ["src"]
